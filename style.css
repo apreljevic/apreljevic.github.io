@@ -28,6 +28,7 @@ p#location {
     gap: 10px;
     padding: 20px;
     margin: auto;
+    grid-template-columns: 1fr;
     max-width: 1280px;
     /* Begrenzung der Breite */
     background: #1e1e1e;
@@ -46,6 +47,7 @@ p#location {
     background-color: #2c2c2c;
     /* Kartenhintergrund im Dark Mode */
     display: flex;
+    font-size: 1.2em;
     flex-direction: column;
     align-items: center;
     /* Zentrierte Inhalte */
@@ -87,21 +89,8 @@ p#location {
     /* Helle Farbe für Labels */
 }
 
-/* Für sehr kleine Bildschirme */
-@media (max-width: 680px) {
-
-    #calendar {
-        grid-template-columns: 1fr;
-    }
-
-    .day {
-        font-size: 1.2em;
-    }
-
-}
-
 /* Für kleine Bildschirme */
-@media (max-width: 979px) {
+@media (min-width: 680px) {
 
     #calendar {
         grid-template-columns: repeat(2, 1fr);

@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const { latitude: latitude, longitude: longitude } = await getLocation();
             const cityName = await getCityName(latitude, longitude);
             locationDisplay.textContent = `Standort: ${cityName}`;
-            const ramadanStart = new Date("2025-03-01");
+            const ramadanStart = new Date("2024-12-09");
             const amountOfMonths = 2;
             const prayerTimes = await getPrayerTimes(latitude, longitude, ramadanStart.getFullYear(), ramadanStart.getMonth() + 1, amountOfMonths);
             renderRamadanCalendar(prayerTimes, ramadanStart);
@@ -119,14 +119,14 @@ document.addEventListener("DOMContentLoaded", async () => {
             day.setDate(ramadanStart.getDate() + i);
             const dateString = day.toLocaleDateString("de-DE", { weekday: 'long', day: 'numeric', month: 'long' });
             let suhur = prayerTimes[i]?.timings?.Fajr || "N/A";
-            if (suhur !== "N/A") {
-              const suhurTime = new Date(`${day.toLocaleDateString()} ${suhur}`);
-              suhurTime.setMinutes(suhurTime.getMinutes() - 20);
-              suhur = suhurTime.toLocaleTimeString("de-DE", {
-                hour: "2-digit",
-                minute: "2-digit",
-              });
-            }
+            // if (suhur !== "N/A") {
+            //   const suhurTime = new Date(`${day.toLocaleDateString()} ${suhur}`);
+            //   suhurTime.setMinutes(suhurTime.getMinutes() - 20);
+            //   suhur = suhurTime.toLocaleTimeString("de-DE", {
+            //     hour: "2-digit",
+            //     minute: "2-digit",
+            //   });
+            // }
             const iftar = prayerTimes[i]?.timings?.Maghrib || "N/A";
             const div = document.createElement("div");
             div.classList.add("day");
