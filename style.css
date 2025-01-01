@@ -61,7 +61,7 @@ p#location {
 }
 
 .highlight {
-    border: 2px solid #ff9800;
+    border: 4px solid #ff9800;
 }
 
 .date {
@@ -115,6 +115,10 @@ p#location {
         background-color: #121212;
     }
 
+    .highlight {
+        border: 3px solid #ff9800;
+    }
+
 }
 
 .timer {
@@ -123,8 +127,8 @@ p#location {
     font-size: 1.2em;
     margin-top: 15px;
     padding: 10px;
-    background-color: #a0dee6;
-    color: #005d6d;
+    background-color: #ffd9b3; /* Pastell-Orange */
+    color: #b35900; /* Dunkles Orange für den Text */
     border-radius: 5px;
     text-align: center;
     font-weight: bold;
