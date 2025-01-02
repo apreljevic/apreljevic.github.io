@@ -54,24 +54,30 @@ document.addEventListener("DOMContentLoaded", async () => {
     async function getLocation() {
         return new Promise((resolve, reject) => {
             if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => resolve(position.coords),
-                    (error) => {
-                        switch (error.code) {
-                            case error.PERMISSION_DENIED:
-                                reject(new Error("Standortzugriff verweigert – bitte Einstellungen prüfen."));
-                                break;
-                            case error.POSITION_UNAVAILABLE:
-                                reject(new Error("Standortinformationen nicht verfügbar."));
-                                break;
-                            case error.TIMEOUT:
-                                reject(new Error("Standortabfrage hat zu lange gedauert."));
-                                break;
-                            default:
-                                reject(new Error("Ein unbekannter Fehler ist aufgetreten."));
+                const allowLocation = confirm("Um die Ramadantage anzuzeigen, benötigen wir Zugriff auf Ihren Standort. Möchten Sie fortfahren?");
+                if (allowLocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => resolve(position.coords),
+                        (error) => {
+                            switch (error.code) {
+                                case error.PERMISSION_DENIED:
+                                    reject(new Error("Standortzugriff wurde verweigert. Bitte erlauben Sie den Zugriff in Ihren Geräteeinstellungen."));
+                                    break;
+                                case error.POSITION_UNAVAILABLE:
+                                    reject(new Error("Standortinformationen nicht verfügbar."));
+                                    break;
+                                case error.TIMEOUT:
+                                    reject(new Error("Standortabfrage hat zu lange gedauert."));
+                                    break;
+                                default:
+                                    reject(new Error("Ein unbekannter Fehler ist aufgetreten."));
+                            }
                         }
-                    }
-                );
+                    );
+                } else {
+                    alert("Standortzugriff wurde verweigert. Bitte erlauben Sie den Zugriff in Ihren Geräteeinstellungen.");
+                    reject(new Error("Standortzugriff wurde verweigert. Bitte erlauben Sie den Zugriff in Ihren Geräteeinstellungen."));
+                }
             } else {
                 reject(new Error("Geolocation wird von diesem Browser nicht unterstützt."));
             }
