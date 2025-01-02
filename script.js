@@ -10,15 +10,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     function addTimerToHighlightedDayElement(iftar) {
         if (highlightedDayElement && iftar !== "N/A") {
             let currentDate = new Date();
-            const iftarTime = new Date(`${currentDate.toLocaleDateString()} ${iftar}`);
-            const timeDiff = iftarTime - currentDate;
+            const [time, timeZone] = iftar.split(" ");
+            const [hour, minute] = time.split(":");
+            const iftarDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), parseInt(hour, 10), parseInt(minute, 10), 0);
+            const timeDiff = iftarDate - currentDate;
             if (timeDiff > 0) {
                 highlightedDayElement.innerHTML += `<div class="timer"></div>`;
                 updateTimer();
                 const timerInterval = setInterval(updateTimer, 1000);
                 function updateTimer() {
                     currentDate = new Date();
-                    const timeDiff = iftarTime - currentDate;
+                    const timeDiff = iftarDate - currentDate;
                     if (timeDiff <= 0) {
                         clearInterval(timerInterval);
                         highlightedDayElement.querySelector('.timer').innerHTML = "Du hast es heute geschafft!";
@@ -119,14 +121,16 @@ document.addEventListener("DOMContentLoaded", async () => {
             day.setDate(ramadanStart.getDate() + i);
             const dateString = day.toLocaleDateString("de-DE", { weekday: 'long', day: 'numeric', month: 'long' });
             let suhur = prayerTimes[i]?.timings?.Fajr || "N/A";
-            // if (suhur !== "N/A") {
-            //   const suhurTime = new Date(`${day.toLocaleDateString()} ${suhur}`);
-            //   suhurTime.setMinutes(suhurTime.getMinutes() - 20);
-            //   suhur = suhurTime.toLocaleTimeString("de-DE", {
-            //     hour: "2-digit",
-            //     minute: "2-digit",
-            //   });
-            // }
+            if (suhur !== "N/A") {
+                const [time, timeZone] = suhur.split(" ");
+                const [hour, minute] = time.split(":");
+                const suhurDate = new Date(day.getFullYear(), day.getMonth(), day.getDate(), parseInt(hour, 10), parseInt(minute, 10), 0);
+                suhurDate.setMinutes(suhurDate.getMinutes() - 20);
+                suhur = suhurDate.toLocaleTimeString("de-DE", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                });
+            }
             const iftar = prayerTimes[i]?.timings?.Maghrib || "N/A";
             const div = document.createElement("div");
             div.classList.add("day");
