@@ -26,6 +26,7 @@ p#location {
 #calendar {
     display: grid;
     gap: 10px;
+    box-sizing: border-box;
     padding: 20px;
     margin: auto;
     grid-template-columns: 1fr;
@@ -34,7 +35,7 @@ p#location {
     background: #1e1e1e;
     /* Dunkler Hintergrund für den Kalender */
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+
     /* Schatten für den Dark Mode */
     overflow: hidden;
 }
@@ -112,7 +113,7 @@ p#location {
     }
 
     body {
-        background-color: #121212;
+        background-color: #252525;
     }
 
 }

@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Add timer to highlighted day element.
     function addTimerToHighlightedDayElement(iftar) {
-        if (highlightedDayElement) {
+        if (highlightedDayElement && iftar !== "N/A") {
             let currentDate = new Date();
             const iftarTime = new Date(`${currentDate.toLocaleDateString()} ${iftar}`);
             const timeDiff = iftarTime - currentDate;
@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                     (error) => {
                         switch (error.code) {
                             case error.PERMISSION_DENIED:
-                                reject(new Error("Standortzugriff verweigert."));
+                                reject(new Error("Standortzugriff verweigert – bitte Einstellungen prüfen."));
                                 break;
                             case error.POSITION_UNAVAILABLE:
                                 reject(new Error("Standortinformationen nicht verfügbar."));
@@ -160,7 +160,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Show error messages on location display.
     function showError(message) {
-        locationDisplay.textContent = `Fehler: ${message}`;
+        locationDisplay.textContent = `${message}`;
     }
 
 });
