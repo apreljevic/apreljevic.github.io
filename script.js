@@ -122,7 +122,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const { latitude: latitude, longitude: longitude } = await getLocation();
                 const cityName = await getCityName(latitude, longitude);
                 locationDisplay.textContent = `Standort: ${cityName}`;
-                const ramadanStart = new Date("2025-03-01");
+                const ramadanStart = new Date("2024-12-15");
                 const amountOfMonths = 2;
                 const prayerTimes = await getPrayerTimes(latitude, longitude, ramadanStart.getFullYear(), ramadanStart.getMonth() + 1, amountOfMonths);
                 renderRamadanCalendar(prayerTimes, ramadanStart);
