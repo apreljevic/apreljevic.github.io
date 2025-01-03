@@ -158,14 +158,14 @@ document.addEventListener("DOMContentLoaded", async () => {
             <div class="time-group">
                 <div class="time-label">Suhur:</div>
                 <div class="time-value">${suhur}</div>
-                <div class="time-label">Iftar:</div>
-                <div class="time-value">${iftar}</div>
                 <div class="time-label">Sunrise:</div>
                 <div class="time-value">${prayerTimes[i]?.timings?.Sunrise}</div>
                 <div class="time-label">Dhuhr:</div>
                 <div class="time-value">${prayerTimes[i]?.timings?.Dhuhr}</div>
                 <div class="time-label">Asr:</div>
                 <div class="time-value">${prayerTimes[i]?.timings?.Asr}</div>
+                <div class="time-label">Iftar:</div>
+                <div class="time-value">${iftar}</div>
                 <div class="time-label">Isha:</div>
                 <div class="time-value">${prayerTimes[i]?.timings?.Isha}</div>
             </div>

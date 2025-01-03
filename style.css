@@ -10,16 +10,17 @@ body {
 }
 
 h1 {
-    margin: 20px 0;
+    margin: 20px 0 10px 0;
     font-size: 2em;
     color: #ffffff;
     /* Überschrift in Weiß */
 }
 
 p#location {
-    margin: 10px 0;
-    font-size: 1.1em;
-    color: #b0b0b0;
+    margin: 0 0 20px 0;
+
+    font-size: 1.2em;
+    color: #d0d0d0;
     /* Leicht abgedunkelt */
 }
 
@@ -61,22 +62,23 @@ p#location {
 }
 
 .highlight {
-    border: 3px solid #ff9800;
+    /* border: 3px solid #ff9800; */
+        border: 3px solid #e7a33d;
 }
 
 .date {
-    font-size: 1.5em;
+    font-size: 1.3em;
     /* Größere Schriftgröße für das Datum */
     font-weight: bold;
     text-align: center;
     margin-bottom: 20px;
-    color: #e0e0e0;
+    color: #ffffff;
     pointer-events: none; /* Verhindert jegliche Klickinteraktionen */
 }
 
 .time-group {
     margin: 0 auto; /* Container zentrieren */
-    font-size: 1.1em;
+    font-size: 1em;
     display: grid;
     grid-template-columns: auto auto; /* Zwei Spalten: Labels und Zeiten */
     gap: 10px 20px; /* Abstand zwischen Zeilen und Spalten */
@@ -105,11 +107,6 @@ p#location {
         padding: 10px;
     }
 
-    .day {
-        font-size: 1.1em;
-        padding: 20px;
-    }
-
 }
 
 /* Für größere Bildschirme */
@@ -128,11 +125,11 @@ p#location {
 .timer {
 
     min-width: 70%;
-    font-size: 1.2em;
+    font-size: 1em;
     margin-top: 20px;
     padding: 10px;
-    background-color: #ffd9b3; /* Pastell-Orange */
-    color: #b35900; /* Dunkles Orange für den Text */
+    background-color: #c0dce4; /* Pastell-Orange */
+    color: #4a6b79; /* Dunkles Orange für den Text */
     border-radius: 5px;
     text-align: center;
     font-weight: bold;
@@ -143,9 +140,66 @@ p#location {
     margin-top: 20px;
     background-color: #d4edda;
     color: #155724;
-    font-size: 1.2em;
+    font-size: 1em;
     padding: 10px;
     border-radius: 5px;
     text-align: center;
     font-weight: bold;
 }
+
+
+  @media print {
+
+    h1 {
+        margin-top: 0px;
+        margin-bottom: 20px;
+        color: #000; /* Schwarz für Überschriften */
+    }
+    .highlight{
+        border: 1px solid #333;
+    }
+    /* Erfolgs- und Timer-Anzeige ausblenden */
+    .success,
+    .timer {
+        display: none;
+    }
+    .day {
+        -webkit-print-color-adjust: exact;
+        border-radius: 10px; /* Abgerundete Ecken */
+        /* background-color: #f8eaf0 !important; */
+      page-break-inside: avoid; /* Verhindert, dass Tage abgeschnitten werden */
+      background-color: white;
+    }
+
+        /* Alternierende Hintergrundfarbe für jeden zweiten Tag */
+        .day:nth-child(even) {
+            /* background-color: #eaf4fc !important; */
+            border: 1px solid #c2d4f0; /* Passender Blauton für den Rahmen */
+        }
+    
+        .day:nth-child(even) .time-label {
+            color: #65799b; /* Dunklerer Rosaton für Labels */
+        }
+
+                /* Alternierende Hintergrundfarbe für jeden zweiten Tag */
+                .day:nth-child(odd) {
+                    /* background-color: #eaf4fc !important; */
+                    border: 1px solid #fac6da; /* Dunklerer Rosaton für den Rahmen */
+                }
+            
+                .day:nth-child(odd) .time-label {
+                    color: #be6d8e; /* Dunklerer Rosaton für Labels */
+                }
+    .date {
+        color: #000; /* Schwarz für das Datum */
+    }
+
+    .time-value {
+        color: #333; /* Dunkelgrau für Zeiten */
+    }
+
+    #location {
+      display: none; /* Verbirgt den Standort in der Druckansicht */
+    }
+
+  }
