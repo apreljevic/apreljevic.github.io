@@ -74,6 +74,14 @@ p#location {
     color: #e0e0e0;
 }
 
+.time-group {
+    display: flex;
+    flex-direction: column; /* Inhalte übereinander anordnen */
+    align-items: flex-start; /* Inhalte innerhalb des Containers linksbündig ausrichten */
+    margin: 0 auto; /* Container zentrieren */
+    text-align: left; /* Text innerhalb des Containers linksbündig */
+  }
+
 .time-info {
     font-size: 1.1em;
     margin: 5px 0;

@@ -54,34 +54,48 @@ document.addEventListener("DOMContentLoaded", async () => {
     async function getLocation() {
         return new Promise((resolve, reject) => {
             if (navigator.geolocation) {
-                const allowLocation = confirm("Um die Ramadantage anzuzeigen, benötigen wir Zugriff auf Ihren Standort. Möchten Sie fortfahren?");
-                if (allowLocation) {
-                    navigator.geolocation.getCurrentPosition(
-                        (position) => resolve(position.coords),
-                        (error) => {
-                            switch (error.code) {
-                                case error.PERMISSION_DENIED:
-                                    reject(new Error("Standortzugriff wurde verweigert. Bitte erlauben Sie den Zugriff in Ihren Geräteeinstellungen."));
-                                    break;
-                                case error.POSITION_UNAVAILABLE:
-                                    reject(new Error("Standortinformationen nicht verfügbar."));
-                                    break;
-                                case error.TIMEOUT:
-                                    reject(new Error("Standortabfrage hat zu lange gedauert."));
-                                    break;
-                                default:
-                                    reject(new Error("Ein unbekannter Fehler ist aufgetreten."));
-                            }
+                navigator.geolocation.getCurrentPosition(
+                    (position) => resolve(position.coords),
+                    (error) => {
+                        switch (error.code) {
+                            case error.PERMISSION_DENIED:
+                                reject(new Error("Standortzugriff wurde verweigert. Bitte erlauben Sie den Zugriff in Ihren Geräteeinstellungen."));
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                reject(new Error("Standortinformationen nicht verfügbar."));
+                                break;
+                            case error.TIMEOUT:
+                                reject(new Error("Standortabfrage hat zu lange gedauert."));
+                                break;
+                            default:
+                                reject(new Error("Ein unbekannter Fehler ist aufgetreten."));
                         }
-                    );
-                } else {
-                    alert("Standortzugriff wurde verweigert. Bitte erlauben Sie den Zugriff in Ihren Geräteeinstellungen.");
-                    reject(new Error("Standortzugriff wurde verweigert. Bitte erlauben Sie den Zugriff in Ihren Geräteeinstellungen."));
-                }
+                    }
+                );
             } else {
                 reject(new Error("Geolocation wird von diesem Browser nicht unterstützt."));
             }
         });
+    }
+
+    // Get location consent from local storage, if available and not older
+    // than 14 days return positive location consent, else try get consent
+    // from user.
+    function getLocationConsent() {
+        const consent = localStorage.getItem("locationConsent");
+        if (consent && new Date(consent) > new Date()) {
+            return true;
+        } else {
+            const allowLocation = confirm("Um die Ramadantage anzuzeigen, benötigen wir Zugriff auf Ihren Standort. Möchten Sie fortfahren?");
+            if (allowLocation) {
+                let expiryDate = new Date();
+                expiryDate.setDate(expiryDate.getDate() + 14); // Expiration date +14 days
+                localStorage.setItem("locationConsent", expiryDate.toISOString());
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
     // Get prayer times for a specific latitude, longtitude,
@@ -104,14 +118,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     // Initialize Ramadan calendar.
     async function initializeRamadanCalendar() {
         try {
-            const { latitude: latitude, longitude: longitude } = await getLocation();
-            const cityName = await getCityName(latitude, longitude);
-            locationDisplay.textContent = `Standort: ${cityName}`;
-            const ramadanStart = new Date("2024-12-09");
-            const amountOfMonths = 2;
-            const prayerTimes = await getPrayerTimes(latitude, longitude, ramadanStart.getFullYear(), ramadanStart.getMonth() + 1, amountOfMonths);
-            renderRamadanCalendar(prayerTimes, ramadanStart);
-            scrollToHighlightedDayElementIfExists();
+            if (getLocationConsent()) {
+                const { latitude: latitude, longitude: longitude } = await getLocation();
+                const cityName = await getCityName(latitude, longitude);
+                locationDisplay.textContent = `Standort: ${cityName}`;
+                const ramadanStart = new Date("2024-12-12");
+                const amountOfMonths = 2;
+                const prayerTimes = await getPrayerTimes(latitude, longitude, ramadanStart.getFullYear(), ramadanStart.getMonth() + 1, amountOfMonths);
+                renderRamadanCalendar(prayerTimes, ramadanStart);
+                scrollToHighlightedDayElementIfExists();
+            } else {
+                throw new Error("Standortzugriff wurde verweigert. Bitte erlauben Sie den Zugriff in Ihren Geräteeinstellungen.");
+            }
         } catch (error) {
             showError(error.message);
         }
@@ -121,29 +139,26 @@ document.addEventListener("DOMContentLoaded", async () => {
     function renderRamadanCalendar(prayerTimes, ramadanStart) {
         const ramadanDays = 30;
         const currentDate = new Date();
-        let hasTimer = false;
         for (let i = 0; i < ramadanDays; i++) {
             const day = new Date(ramadanStart);
             day.setDate(ramadanStart.getDate() + i);
             const dateString = day.toLocaleDateString("de-DE", { weekday: 'long', day: 'numeric', month: 'long' });
             let suhur = prayerTimes[i]?.timings?.Fajr || "N/A";
             if (suhur !== "N/A") {
-                const [time, timeZone] = suhur.split(" ");
-                const [hour, minute] = time.split(":");
-                const suhurDate = new Date(day.getFullYear(), day.getMonth(), day.getDate(), parseInt(hour, 10), parseInt(minute, 10), 0);
-                suhurDate.setMinutes(suhurDate.getMinutes() - 20);
-                suhur = suhurDate.toLocaleTimeString("de-DE", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                });
+                suhur = setMinutesForPrayerTime(suhur, -20);
             }
-            const iftar = prayerTimes[i]?.timings?.Maghrib || "N/A";
+            let iftar = prayerTimes[i]?.timings?.Maghrib || "N/A";
+            if (iftar !== "N/A") {
+                iftar = setMinutesForPrayerTime(iftar, +6);
+            }
             const div = document.createElement("div");
             div.classList.add("day");
             div.innerHTML = `
             <div class="date">${dateString}</div>
-            <div class="time-info"><strong>Suhur:</strong> ${suhur}</div>
-            <div class="time-info"><strong>Iftar:</strong> ${iftar}</div>
+            <div class="time-group">
+                <div class="time-info"><strong>Suhur:</strong> ${suhur}</div>
+                <div class="time-info"><strong>Iftar:</strong> ${iftar}</div>
+            </div>
             `;
             if (!highlightedDayElement) {
                 if (day.getDate() === currentDate.getDate() &&
@@ -156,6 +171,18 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
             calendar.appendChild(div);
         }
+    }
+
+    // Set minutes for prayer time.
+    function setMinutesForPrayerTime(prayerTime, minutes) {
+        const [time, timeZone] = prayerTime.split(" ");
+        const [hour, minute] = time.split(":");
+        const prayerTimeDate = new Date(1, 1, 1, parseInt(hour, 10), parseInt(minute, 10), 0);
+        prayerTimeDate.setMinutes(prayerTimeDate.getMinutes() + minutes);
+        return prayerTimeDate.toLocaleTimeString("de-DE", {
+            hour: "2-digit",
+            minute: "2-digit",
+        }) + " " + timeZone;
     }
 
     // Scrolls to highlighted day element if exists.
