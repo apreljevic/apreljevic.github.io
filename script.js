@@ -122,7 +122,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const { latitude: latitude, longitude: longitude } = await getLocation();
                 const cityName = await getCityName(latitude, longitude);
                 locationDisplay.textContent = `Standort: ${cityName}`;
-                const ramadanStart = new Date("2024-12-12");
+                const ramadanStart = new Date("2025-03-01");
                 const amountOfMonths = 2;
                 const prayerTimes = await getPrayerTimes(latitude, longitude, ramadanStart.getFullYear(), ramadanStart.getMonth() + 1, amountOfMonths);
                 renderRamadanCalendar(prayerTimes, ramadanStart);
@@ -156,18 +156,18 @@ document.addEventListener("DOMContentLoaded", async () => {
             div.innerHTML = `
             <div class="date">${dateString}</div>
             <div class="time-group">
-                <div class="time-label">Suhur:</div>
+                <div class="time-label">İmsak:</div>
                 <div class="time-value">${suhur}</div>
-                <div class="time-label">Sunrise:</div>
-                <div class="time-value">${prayerTimes[i]?.timings?.Sunrise}</div>
-                <div class="time-label">Dhuhr:</div>
-                <div class="time-value">${prayerTimes[i]?.timings?.Dhuhr}</div>
-                <div class="time-label">Asr:</div>
-                <div class="time-value">${prayerTimes[i]?.timings?.Asr}</div>
-                <div class="time-label">Iftar:</div>
+                <div class="time-label">Güneş:</div>
+                <div class="time-value">${setMinutesForPrayerTime(prayerTimes[i]?.timings?.Sunrise, -6)}</div>
+                <div class="time-label">Öğle:</div>
+                <div class="time-value">${setMinutesForPrayerTime(prayerTimes[i]?.timings?.Dhuhr, +6)}</div>
+                <div class="time-label">İkindi:</div>
+                <div class="time-value">${setMinutesForPrayerTime(prayerTimes[i]?.timings?.Asr, +6)}</div>
+                <div class="time-label">Akşam:</div>
                 <div class="time-value">${iftar}</div>
-                <div class="time-label">Isha:</div>
-                <div class="time-value">${prayerTimes[i]?.timings?.Isha}</div>
+                <div class="time-label">Yatsı:</div>
+                <div class="time-value">${setMinutesForPrayerTime(prayerTimes[i]?.timings?.Isha, +6)}</div>
             </div>
             `;
             if (!highlightedDayElement) {
