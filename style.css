@@ -75,13 +75,11 @@ p#location {
 }
 
 .time-group {
-    display: grid;
-    grid-template-columns: repeat(2, auto); /* Zwei Spalten mit automatischer Breite */
-    gap: 10px 20px; /* Abstand zwischen Zeilen und Spalten */
-    justify-content: start; /* Spalten links und rechts ausrichten */
-    align-items: start; /* Inhalte in den Zellen oben ausrichten */
-    text-align: left; /* Text in den Zellen linksbündig */
-    margin: 0 auto; /* Gruppe insgesamt zentriert */
+    display: flex;
+    flex-direction: column; /* Inhalte übereinander anordnen */
+    align-items: flex-start; /* Inhalte innerhalb des Containers linksbündig ausrichten */
+    margin: 0 auto; /* Container zentrieren */
+    text-align: left; /* Text innerhalb des Containers linksbündig */
   }
 
 .time-info {

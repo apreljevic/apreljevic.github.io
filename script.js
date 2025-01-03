@@ -153,15 +153,15 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
             const div = document.createElement("div");
             div.classList.add("day");
+            // <div class="time-info"><strong>Sunrise:</strong> ${prayerTimes[i]?.timings?.Sunrise}</div>
+            // <div class="time-info"><strong>Zhuhr:</strong> ${prayerTimes[i]?.timings?.Dhuhr}</div>
+            // <div class="time-info"><strong>Asr:</strong> ${prayerTimes[i]?.timings?.Asr}</div>
+            // <div class="time-info"><strong>Isha:</strong> ${prayerTimes[i]?.timings?.Isha}</div>
             div.innerHTML = `
             <div class="date">${dateString}</div>
             <div class="time-group">
                 <div class="time-info"><strong>Suhur:</strong> ${suhur}</div>
-                <div class="time-info"><strong>Sunrise:</strong> ${prayerTimes[i]?.timings?.Sunrise}</div>
-                <div class="time-info"><strong>Zhuhr:</strong> ${prayerTimes[i]?.timings?.Dhuhr}</div>
-                <div class="time-info"><strong>Asr:</strong> ${prayerTimes[i]?.timings?.Asr}</div>
                 <div class="time-info"><strong>Iftar:</strong> ${iftar}</div>
-                <div class="time-info"><strong>Isha:</strong> ${prayerTimes[i]?.timings?.Isha}</div>
             </div>
             `;
             if (!highlightedDayElement) {
