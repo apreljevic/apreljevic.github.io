@@ -143,9 +143,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             const day = new Date(ramadanStart);
             day.setDate(ramadanStart.getDate() + i);
             const dateString = day.toLocaleDateString("de-DE", { weekday: 'long', day: 'numeric', month: 'long' });
-            let suhur = prayerTimes[i]?.timings?.Fajr || "N/A";
+            let suhur = prayerTimes[i]?.timings?.Imsak || "N/A";
             if (suhur !== "N/A") {
-                suhur = setMinutesForPrayerTime(suhur, -20);
+                suhur = setMinutesForPrayerTime(suhur, -10);
             }
             let iftar = prayerTimes[i]?.timings?.Maghrib || "N/A";
             if (iftar !== "N/A") {
@@ -157,7 +157,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             <div class="date">${dateString}</div>
             <div class="time-group">
                 <div class="time-info"><strong>Suhur:</strong> ${suhur}</div>
+                <div class="time-info"><strong>Sunrise:</strong> ${prayerTimes[i]?.timings?.Sunrise}</div>
+                <div class="time-info"><strong>Zhuhr:</strong> ${prayerTimes[i]?.timings?.Dhuhr}</div>
+                <div class="time-info"><strong>Asr:</strong> ${prayerTimes[i]?.timings?.Asr}</div>
                 <div class="time-info"><strong>Iftar:</strong> ${iftar}</div>
+                <div class="time-info"><strong>Isha:</strong> ${prayerTimes[i]?.timings?.Isha}</div>
             </div>
             `;
             if (!highlightedDayElement) {
