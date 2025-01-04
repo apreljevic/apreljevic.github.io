@@ -147,8 +147,26 @@ p#location {
     font-weight: bold;
 }
 
+@media print and (orientation: portrait) {
+    #calendar {
+        grid-template-columns: repeat(2, 1fr);
+    }
+  }
 
+  /* Stile für Querformat */
+@media print and (orientation: landscape) {
+    #calendar {
+        grid-template-columns: repeat(3, 1fr);
+    }
+  }
   @media print {
+    body {
+        background-color: white;
+    }
+
+    #calendar {
+        background: white;
+    }
 
     h1 {
         margin-top: 0px;
