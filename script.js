@@ -123,8 +123,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const cityName = await getCityName(latitude, longitude);
                 locationDisplay.textContent = `Standort: ${cityName}`;
                 const ramadanStart = new Date("2025-03-01");
-                const amountOfMonths = 2;
-                const prayerTimes = await getPrayerTimes(latitude, longitude, ramadanStart.getFullYear(), ramadanStart.getMonth() + 2, amountOfMonths);
+                const amountOfMonths = 3;
+                const prayerTimes = await getPrayerTimes(latitude, longitude, ramadanStart.getFullYear(), ramadanStart.getMonth(), amountOfMonths);
                 renderRamadanCalendar(prayerTimes, ramadanStart);
                 scrollToHighlightedDayElementIfExists();
             } else {
@@ -145,6 +145,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const dateString = day.toLocaleDateString("de-DE", { weekday: 'long', day: 'numeric', month: 'long' });
             const div = document.createElement("div");
             div.classList.add("day");
+            let iftar = setMinutesForPrayerTime(prayerTimes[i]?.timings?.Maghrib, +6);
             div.innerHTML = `
             <div class="date">${dateString}</div>
             <div class="time-group">
@@ -157,7 +158,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <div class="time-label">Asr:</div>
                 <div class="time-value">${setMinutesForPrayerTime(prayerTimes[i]?.timings?.Asr, +6)}</div>
                 <div class="time-label">Iftar:</div>
-                <div class="time-value">${setMinutesForPrayerTime(prayerTimes[i]?.timings?.Maghrib, +6)}</div>
+                <div class="time-value">${iftar}</div>
                 <div class="time-label">Isha:</div>
                 <div class="time-value">${setMinutesForPrayerTime(prayerTimes[i]?.timings?.Isha, +6)}</div>
             </div>
@@ -173,6 +174,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
             calendar.appendChild(div);
         }
+        return;
     }
 
     // Set minutes for prayer time.
