@@ -122,9 +122,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const { latitude: latitude, longitude: longitude } = await getLocation();
                 const cityName = await getCityName(latitude, longitude);
                 locationDisplay.textContent = `Standort: ${cityName}`;
-                const ramadanStart = new Date("2024-12-15");
+                const ramadanStart = new Date("2025-03-01");
                 const amountOfMonths = 2;
-                const prayerTimes = await getPrayerTimes(latitude, longitude, ramadanStart.getFullYear(), ramadanStart.getMonth() + 1, amountOfMonths);
+                const prayerTimes = await getPrayerTimes(latitude, longitude, ramadanStart.getFullYear(), ramadanStart.getMonth() + 2, amountOfMonths);
                 renderRamadanCalendar(prayerTimes, ramadanStart);
                 scrollToHighlightedDayElementIfExists();
             } else {
@@ -143,30 +143,22 @@ document.addEventListener("DOMContentLoaded", async () => {
             const day = new Date(ramadanStart);
             day.setDate(ramadanStart.getDate() + i);
             const dateString = day.toLocaleDateString("de-DE", { weekday: 'long', day: 'numeric', month: 'long' });
-            let suhur = prayerTimes[i]?.timings?.Imsak || "N/A";
-            if (suhur !== "N/A") {
-                suhur = setMinutesForPrayerTime(suhur, -10);
-            }
-            let iftar = prayerTimes[i]?.timings?.Maghrib || "N/A";
-            if (iftar !== "N/A") {
-                iftar = setMinutesForPrayerTime(iftar, +6);
-            }
             const div = document.createElement("div");
             div.classList.add("day");
             div.innerHTML = `
             <div class="date">${dateString}</div>
             <div class="time-group">
-                <div class="time-label">İmsak:</div>
-                <div class="time-value">${suhur}</div>
-                <div class="time-label">Güneş:</div>
+                <div class="time-label">Suhur:</div>
+                <div class="time-value">${setMinutesForPrayerTime(prayerTimes[i]?.timings?.Imsak, -10)}</div>
+                <div class="time-label">Sunrise:</div>
                 <div class="time-value">${setMinutesForPrayerTime(prayerTimes[i]?.timings?.Sunrise, -6)}</div>
-                <div class="time-label">Öğle:</div>
+                <div class="time-label">Dhuhr:</div>
                 <div class="time-value">${setMinutesForPrayerTime(prayerTimes[i]?.timings?.Dhuhr, +6)}</div>
-                <div class="time-label">İkindi:</div>
+                <div class="time-label">Asr:</div>
                 <div class="time-value">${setMinutesForPrayerTime(prayerTimes[i]?.timings?.Asr, +6)}</div>
-                <div class="time-label">Akşam:</div>
-                <div class="time-value">${iftar}</div>
-                <div class="time-label">Yatsı:</div>
+                <div class="time-label">Iftar:</div>
+                <div class="time-value">${setMinutesForPrayerTime(prayerTimes[i]?.timings?.Maghrib, +6)}</div>
+                <div class="time-label">Isha:</div>
                 <div class="time-value">${setMinutesForPrayerTime(prayerTimes[i]?.timings?.Isha, +6)}</div>
             </div>
             `;
@@ -185,14 +177,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Set minutes for prayer time.
     function setMinutesForPrayerTime(prayerTime, minutes) {
-        const [time, timeZone] = prayerTime.split(" ");
-        const [hour, minute] = time.split(":");
-        const prayerTimeDate = new Date(1, 1, 1, parseInt(hour, 10), parseInt(minute, 10), 0);
-        prayerTimeDate.setMinutes(prayerTimeDate.getMinutes() + minutes);
-        return prayerTimeDate.toLocaleTimeString("de-DE", {
-            hour: "2-digit",
-            minute: "2-digit",
-        }) + " " + timeZone;
+        if (prayerTime) {
+            const [time, timeZone] = prayerTime.split(" ");
+            const [hour, minute] = time.split(":");
+            const prayerTimeDate = new Date(1, 1, 1, parseInt(hour, 10), parseInt(minute, 10), 0);
+            prayerTimeDate.setMinutes(prayerTimeDate.getMinutes() + minutes);
+            return prayerTimeDate.toLocaleTimeString("de-DE", {
+                hour: "2-digit",
+                minute: "2-digit",
+            }) + " " + timeZone;
+        } else {
+            return "not available";
+        }
     }
 
     // Scrolls to highlighted day element if exists.
