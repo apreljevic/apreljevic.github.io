@@ -8,19 +8,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Add timer to highlighted day element.
     function addTimerToHighlightedDayElement(iftar) {
-        if (highlightedDayElement && iftar !== "N/A") {
+        if (highlightedDayElement && iftar) {
             let currentDate = new Date();
-            const [time, timeZone] = iftar.split(" ");
-            const [hour, minute] = time.split(":");
-            const iftarDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), parseInt(hour, 10), parseInt(minute, 10), 0);
-            const timeDiff = iftarDate - currentDate;
+            const timeDiff = iftar - currentDate;
             if (timeDiff > 0) {
                 highlightedDayElement.innerHTML += `<div class="timer"></div>`;
                 updateTimer();
                 const timerInterval = setInterval(updateTimer, 1000);
                 function updateTimer() {
                     currentDate = new Date();
-                    const timeDiff = iftarDate - currentDate;
+                    const timeDiff = iftar - currentDate;
                     if (timeDiff <= 0) {
                         clearInterval(timerInterval);
                         highlightedDayElement.querySelector('.timer').innerHTML = "Du hast es heute geschafft!";
@@ -98,10 +95,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
+    // https://aladhan.com/prayer-times-api#get-/nextPrayer/-date-
     // Get prayer times for a specific latitude, longtitude,
     // year, start month and a defined amount of months.
-    async function getPrayerTimes(latitude, longitude, year, startMonth, amountOfMonths) {
-        const url = `https://api.aladhan.com/v1/calendar?latitude=${latitude}&longitude=${longitude}&method=${amountOfMonths}&month=${startMonth}&year=${year}`;
+    // tune:  The order is Imsak,Fajr,Sunrise,Dhuhr,Asr,Maghrib,Sunset,Isha,Midnight.
+    async function getPrayerTimes(latitude, longitude) {
+        const url = `
+        https://api.aladhan.com/v1/calendar/from/01-03-2025/to/30-03-2025?method=13&calendarMethod=DIYANET&school=1&iso8601=true&latitudeAdjustmentMethod=3&midnightMode=0&timezonestring=Europe/Berlin&latitude=${latitude}&longitude=${longitude}`;
         try {
             const response = await fetch(url);
             const data = await response.json();
@@ -122,10 +122,8 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const { latitude: latitude, longitude: longitude } = await getLocation();
                 const cityName = await getCityName(latitude, longitude);
                 locationDisplay.textContent = `Standort: ${cityName}`;
-                const ramadanStart = new Date("2025-03-01");
-                const amountOfMonths = 3;
-                const prayerTimes = await getPrayerTimes(latitude, longitude, ramadanStart.getFullYear(), ramadanStart.getMonth(), amountOfMonths);
-                renderRamadanCalendar(prayerTimes, ramadanStart);
+                const prayerTimes = await getPrayerTimes(latitude, longitude);
+                renderRamadanCalendar(prayerTimes);
                 scrollToHighlightedDayElementIfExists();
             } else {
                 throw new Error("Standortzugriff wurde verweigert. Bitte erlauben Sie den Zugriff in Ihren Geräteeinstellungen.");
@@ -136,58 +134,51 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // Render calendar for specific prayer times.
-    function renderRamadanCalendar(prayerTimes, ramadanStart) {
-        const ramadanDays = 30;
+    function renderRamadanCalendar(prayerTimes) {
         const currentDate = new Date();
-        for (let i = 0; i < ramadanDays; i++) {
-            const day = new Date(ramadanStart);
-            day.setDate(ramadanStart.getDate() + i);
-            const dateString = day.toLocaleDateString("de-DE", { weekday: 'long', day: 'numeric', month: 'long' });
+        prayerTimes.forEach(prayerTime => {
+            let iftar = new Date(prayerTime.timings.Maghrib);
+            const dateString = iftar.toLocaleDateString("de-DE", { weekday: 'long', day: 'numeric', month: 'long' });
             const div = document.createElement("div");
             div.classList.add("day");
-            let iftar = setMinutesForPrayerTime(prayerTimes[i]?.timings?.Maghrib, +6);
             div.innerHTML = `
             <div class="date">${dateString}</div>
             <div class="time-group">
                 <div class="time-label">Suhur:</div>
-                <div class="time-value">${setMinutesForPrayerTime(prayerTimes[i]?.timings?.Imsak, -10)}</div>
+                <div class="time-value">${formatToLocalTimeString(prayerTime?.timings?.Imsak)}</div>
                 <div class="time-label">Sunrise:</div>
-                <div class="time-value">${setMinutesForPrayerTime(prayerTimes[i]?.timings?.Sunrise, -6)}</div>
+                <div class="time-value">${formatToLocalTimeString(prayerTime?.timings?.Sunrise)}</div>
                 <div class="time-label">Dhuhr:</div>
-                <div class="time-value">${setMinutesForPrayerTime(prayerTimes[i]?.timings?.Dhuhr, +6)}</div>
+                <div class="time-value">${formatToLocalTimeString(prayerTime?.timings?.Dhuhr)}</div>
                 <div class="time-label">Asr:</div>
-                <div class="time-value">${setMinutesForPrayerTime(prayerTimes[i]?.timings?.Asr, +6)}</div>
+                <div class="time-value">${formatToLocalTimeString(prayerTime?.timings?.Asr)}</div>
                 <div class="time-label">Iftar:</div>
-                <div class="time-value">${iftar}</div>
+                <div class="time-value">${formatToLocalTimeString(prayerTime?.timings?.Maghrib)}</div>
                 <div class="time-label">Isha:</div>
-                <div class="time-value">${setMinutesForPrayerTime(prayerTimes[i]?.timings?.Isha, +6)}</div>
+                <div class="time-value">${formatToLocalTimeString(prayerTime?.timings?.Isha)}</div>
             </div>
             `;
             if (!highlightedDayElement) {
-                if (day.getDate() === currentDate.getDate() &&
-                    day.getMonth() === currentDate.getMonth() &&
-                    day.getFullYear() === currentDate.getFullYear()) {
+                if (iftar.getDate() === currentDate.getDate() &&
+                    iftar.getMonth() === currentDate.getMonth() &&
+                    iftar.getFullYear() === currentDate.getFullYear()) {
                     div.classList.add("highlight");
                     highlightedDayElement = div;
                     addTimerToHighlightedDayElement(iftar);
                 }
             }
             calendar.appendChild(div);
-        }
+        });
         return;
     }
 
     // Set minutes for prayer time.
-    function setMinutesForPrayerTime(prayerTime, minutes) {
+    function formatToLocalTimeString(prayerTime) {
         if (prayerTime) {
-            const [time, timeZone] = prayerTime.split(" ");
-            const [hour, minute] = time.split(":");
-            const prayerTimeDate = new Date(1, 1, 1, parseInt(hour, 10), parseInt(minute, 10), 0);
-            prayerTimeDate.setMinutes(prayerTimeDate.getMinutes() + minutes);
-            return prayerTimeDate.toLocaleTimeString("de-DE", {
+            return new Date(prayerTime).toLocaleTimeString("de-DE", {
                 hour: "2-digit",
                 minute: "2-digit",
-            }) + " " + timeZone;
+            });
         } else {
             return "not available";
         }
