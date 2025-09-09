@@ -114,9 +114,6 @@ p#location {
 }
 
 @media (min-width: 980px) {
-    body {
-        background-color: #252525;
-    }
     #calendar {
         grid-template-columns: repeat(3, 1fr);
     }
