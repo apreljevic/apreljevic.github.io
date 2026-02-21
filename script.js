@@ -101,7 +101,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // tune:  The order is Imsak,Fajr,Sunrise,Dhuhr,Asr,Maghrib,Sunset,Isha,Midnight.
     async function getPrayerTimes(latitude, longitude) {
         const url = `
-        https://api.aladhan.com/v1/calendar/from/01-09-2025/to/30-09-2025?method=13&calendarMethod=DIYANET&school=1&iso8601=true&latitudeAdjustmentMethod=3&midnightMode=0&timezonestring=Europe/Berlin&latitude=${latitude}&longitude=${longitude}`;
+        https://api.aladhan.com/v1/calendar/from/19-02-2026/to/19-03-2026?method=13&calendarMethod=DIYANET&school=1&iso8601=true&latitudeAdjustmentMethod=3&midnightMode=0&timezonestring=Europe/Berlin&latitude=${latitude}&longitude=${longitude}`;
         try {
             const response = await fetch(url);
             const data = await response.json();
@@ -198,5 +198,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     function showError(message) {
         locationDisplay.textContent = `${message}`;
     }
+
 
 });
