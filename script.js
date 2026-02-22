@@ -80,6 +80,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // from user.
     function getLocationConsent() {
         const consent = localStorage.getItem("locationConsent");
+        return true;
         if (consent && new Date(consent) > new Date()) {
             return true;
         } else {
@@ -201,3 +202,4 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
 });
+
